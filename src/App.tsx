@@ -42,7 +42,7 @@ function App  ()  {
     const formData = new FormData();
     formData.append('file', event.target); // Adjust this depending on how you're capturing the file
   
-    axios.post('http://localhost:5000/upload-image', image, {
+    axios.post('http://localhost:5000/upload-image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
