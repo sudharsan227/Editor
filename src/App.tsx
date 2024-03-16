@@ -2,16 +2,20 @@ import axios from 'axios';
 import React, { BaseSyntheticEvent, useState } from 'react';
 
 function App  ()  {
-  const [image, setImage] = useState<string>();
+  const [image, setImage] = useState<any>();
+  const [imagePreview, setImagePreview] = useState<string | undefined>(undefined); // For image preview
   const [speechToText, setSpeechToText] = useState<string>('');
   const [translatedText, setTranslatedText] = useState<string>('');
   const [outputImage, setOutputImage] = useState<string>();
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImage(URL.createObjectURL(file));
+  const handleImageChange = (event : React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setImage(file);
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl); // Update the state to hold the preview URL
     }
+
   };
 
   const handleVoiceRecording = () => {
@@ -40,8 +44,8 @@ function App  ()  {
     // Assuming image holds a file selected by the user
     // First, we need to create FormData to send as multipart/form-data
     const formData = new FormData();
-    formData.append('file', event.target); // Adjust this depending on how you're capturing the file
-  
+    formData.append('file', image);
+    formData.append('fileName', image.name);  
     axios.post('http://localhost:5000/upload-image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -66,7 +70,7 @@ function App  ()  {
       <form onSubmit={handleSubmit}>
         <h1>React TypeScript App with Vite</h1>
         <input type="file" onChange={handleImageChange} />
-        {image && <img src={image} alt="Uploaded" style={{ width: "100px" }} />}
+        {imagePreview && <img src={imagePreview} alt="Preview" style={{ width: "100px" }} />}
         <button onClick={handleVoiceRecording}>Record Voice</button>
         <textarea value={speechToText} readOnly />
         <textarea value={translatedText} readOnly />
